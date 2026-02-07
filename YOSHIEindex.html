@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ヨシエ歯科｜お客様アンケート</title>
+    <style>
+        /* 基本設定 */
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: #1a1a1a; /* 高級感のある青背景 */
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #2c2c2c;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #d4af37; /* ホワイト */
+        }
+        p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cccccc;
+        }
+        
+        /* 星評価のデザイン */
+        .rating-box {
+            margin: 20px 0;
+        }
+        .stars {
+            display: inline-block;
+            font-size: 45px;
+            cursor: pointer;
+        }
+        .star {
+            color: #555; /* 未選択の色 */
+            transition: color 0.2s;
+        }
+        .star.active {
+            color: #ffd700; /* 選択時の色（ホワイト） */
+        }
+
+        /* 隠すクラス */
+        .hidden {
+            display: none;
+        }
+
+        /* 入力エリア */
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #eee;
+            font-size: 16px;
+            box-sizing: border-box; /* パディングを含める */
+        }
+
+        /* ボタンデザイン */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .btn-google {
+            background-color: #4285F4; /* Googleブルー */
+            color: white;
+        }
+        .btn-submit {
+            background-color: #d4af37; /* 店舗カラー */
+            color: #1a1a1a;
+        }
+        
+        /* アニメーション */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>YOSHIE　SHIKA</h1>
+    <p>本日はご来店ありがとうございました。<br>より良いお店づくりのため、<br>率直な評価をお願いいたします。</p>
+
+    <div class="rating-box">
+        <div class="stars" id="stars">
+            <span class="star" onclick="rate(1)">★</span>
+            <span class="star" onclick="rate(2)">★</span>
+            <span class="star" onclick="rate(3)">★</span>
+            <span class="star" onclick="rate(4)">★</span>
+            <span class="star" onclick="rate(5)">★</span>
+        </div>
+        <p id="rating-text">星をタップしてください</p>
+    </div>
+
+    <div id="high-rating" class="hidden fade-in">
+        <p style="color: white; font-weight: bold;">高い評価をありがとうございます！</p>
+        <p>スタッフ一同の励みになります。<br>よろしければGoogleマップでも<br>応援コメントを頂けると嬉しいです！</p>
+        
+        <a href="https://search.google.com/local/writereview?placeid=YOUR_PLACE_ID" target="_blank" class="btn btn-google">
+            Google口コミを投稿する ＞
+        </a>
+    </div>
+
+    <div id="low-rating" class="hidden fade-in">
+        <p style="color: white; font-weight: bold;">ご期待に添えず申し訳ございません。</p>
+        <p>至らなかった点や改善すべき点を<br>お聞かせいただけますでしょうか。</p>
+        
+        <form id="feedback-form" onsubmit="submitFeedback(event)">
+            <textarea id="feedback-text" placeholder="例：提供が遅かった、味が濃かった...など" required></textarea>
+            <button type="submit" class="btn btn-submit">意見を送信する</button>
+        </form>
+    </div>
+
+    <div id="thank-you" class="hidden fade-in">
+        <p style="font-weight: bold; font-size: 18px;">貴重なご意見ありがとうございます。</p>
+        <p>頂戴したご意見は真摯に受け止め、<br>今後の改善に役立てて参ります。</p>
+    </div>
+</div>
+
+<script>
+    // ▼ ここにGoogle口コミのURLを入れてください（後述の説明参照）
+    const GOOGLE_REVIEW_LINK = "https://g.page/r/CZwqK-wYoegQEAE/review";
+
+    function rate(score) {
+        const stars = document.querySelectorAll('.star');
+        const text = document.getElementById('rating-text');
+        
+        // 星の色をリセット＆塗る
+        stars.forEach((star, index) => {
+            if (index < score) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+
+        // テキスト更新
+        text.innerText = score + "点を選択中";
+
+        // エリアの切り替え
+        const highArea = document.getElementById('high-rating');
+        const lowArea = document.getElementById('low-rating');
+        const googleBtn = document.querySelector('.btn-google');
+
+        // 一度リセット
+        highArea.classList.add('hidden');
+        lowArea.classList.add('hidden');
+        document.getElementById('thank-you').classList.add('hidden');
+
+        if (score >= 4) {
+            // 星4以上：Googleへ誘導
+            highArea.classList.remove('hidden');
+            // URLを設定
+            googleBtn.href = GOOGLE_REVIEW_LINK;
+        } else {
+            // 星3以下：社内フォームを表示
+            lowArea.classList.remove('hidden');
+        }
+    }
+
+    function submitFeedback(event) {
+        event.preventDefault(); // 画面リロードを防ぐ
+        
+        const feedback = document.getElementById('feedback-text').value;
+        
+        // ここで本来はサーバーにデータを送りますが、
+        // 簡易版として「送信完了画面」を表示します。
+        // （Googleフォームと連携させると、実際にデータが蓄積されます）
+        
+        document.getElementById('low-rating').classList.add('hidden');
+        document.getElementById('thank-you').classList.remove('hidden');
+        
+        // ★実際にオーナーへメール通知したい場合は、GoogleフォームのURLに飛ばすのが一番簡単です。
+    }
+</script>
+
+</body>
+</html>
